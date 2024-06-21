@@ -1,0 +1,444 @@
+{
+  "presetComments": [
+    {
+      "comment": "Great taste",
+      "score": 5
+    },
+    {
+      "comment": "Good service",
+      "score": 4
+    },
+    {
+      "comment": "Average quality",
+      "score": 3
+    },
+    {
+      "comment": "Bad service",
+      "score": 2
+    },
+    {
+      "comment": "Terrible experience",
+      "score": 1
+    },
+    {
+      "comment": "Delicious food",
+      "score": 5
+    },
+    {
+      "comment": "Friendly staff",
+      "score": 4
+    },
+    {
+      "comment": "Okay ambiance",
+      "score": 3
+    },
+    {
+      "comment": "Slow service",
+      "score": 2
+    },
+    {
+      "comment": "Unhygienic conditions",
+      "score": 1
+    },
+    {
+      "comment": "Amazing presentation",
+      "score": 5
+    },
+    {
+      "comment": "Fast service",
+      "score": 4
+    },
+    {
+      "comment": "Decent food",
+      "score": 3
+    },
+    {
+      "comment": "Poor quality",
+      "score": 2
+    },
+    {
+      "comment": "Awful taste",
+      "score": 1
+    },
+    {
+      "comment": "Excellent flavors",
+      "score": 5
+    },
+    {
+      "comment": "Courteous staff",
+      "score": 4
+    },
+    {
+      "comment": "Mediocre experience",
+      "score": 3
+    },
+    {
+      "comment": "Rude service",
+      "score": 2
+    },
+    {
+      "comment": "Food poisoning",
+      "score": 1
+    },
+    {
+      "comment": "Mouth-watering dishes",
+      "score": 5
+    },
+    {
+      "comment": "Pleasant atmosphere",
+      "score": 4
+    },
+    {
+      "comment": "Not bad",
+      "score": 3
+    },
+    {
+      "comment": "Inattentive staff",
+      "score": 2
+    },
+    {
+      "comment": "Disgusting",
+      "score": 1
+    },
+    {
+      "comment": "Top-notch cuisine",
+      "score": 5
+    },
+    {
+      "comment": "Warm environment",
+      "score": 4
+    },
+    {
+      "comment": "Just okay",
+      "score": 3
+    },
+    {
+      "comment": "Slow kitchen",
+      "score": 2
+    },
+    {
+      "comment": "Gross",
+      "score": 1
+    },
+    {
+      "comment": "Fantastic meal",
+      "score": 5
+    },
+    {
+      "comment": "Comfortable seating",
+      "score": 4
+    },
+    {
+      "comment": "Average service",
+      "score": 3
+    },
+    {
+      "comment": "Unprofessional",
+      "score": 2
+    },
+    {
+      "comment": "Repulsive",
+      "score": 1
+    },
+    {
+      "comment": "Yummy",
+      "score": 5
+    },
+    {
+      "comment": "Attentive service",
+      "score": 4
+    },
+    {
+      "comment": "Nothing special",
+      "score": 3
+    },
+    {
+      "comment": "Poor hygiene",
+      "score": 2
+    },
+    {
+      "comment": "Horrible",
+      "score": 1
+    },
+    {
+      "comment": "Exceptional taste",
+      "score": 5
+    },
+    {
+      "comment": "Friendly environment",
+      "score": 4
+    },
+    {
+      "comment": "Fine dining",
+      "score": 3
+    },
+    {
+      "comment": "Dirty utensils",
+      "score": 2
+    },
+    {
+      "comment": "Disaster",
+      "score": 1
+    },
+    {
+      "comment": "Satisfying meal",
+      "score": 5
+    },
+    {
+      "comment": "Polite staff",
+      "score": 4
+    },
+    {
+      "comment": "Passable",
+      "score": 3
+    },
+    {
+      "comment": "Overpriced",
+      "score": 2
+    },
+    {
+      "comment": "Nauseating",
+      "score": 1
+    },
+    {
+      "comment": "Perfectly cooked",
+      "score": 5
+    },
+    {
+      "comment": "Nice decor",
+      "score": 4
+    },
+    {
+      "comment": "Acceptable",
+      "score": 3
+    },
+    {
+      "comment": "Unpleasant experience",
+      "score": 2
+    },
+    {
+      "comment": "Unbearable",
+      "score": 1
+    },
+    {
+      "comment": "Superb",
+      "score": 5
+    },
+    {
+      "comment": "Good atmosphere",
+      "score": 4
+    },
+    {
+      "comment": "So-so",
+      "score": 3
+    },
+    {
+      "comment": "Badly cooked",
+      "score": 2
+    },
+    {
+      "comment": "Abominable",
+      "score": 1
+    },
+    {
+      "comment": "Flavorful",
+      "score": 5
+    },
+    {
+      "comment": "Enjoyable",
+      "score": 4
+    },
+    {
+      "comment": "Ordinary",
+      "score": 3
+    },
+    {
+      "comment": "Bland",
+      "score": 2
+    },
+    {
+      "comment": "Unpalatable",
+      "score": 1
+    },
+    {
+      "comment": "Delightful",
+      "score": 5
+    },
+    {
+      "comment": "Hospitable",
+      "score": 4
+    },
+    {
+      "comment": "Mediocre",
+      "score": 3
+    },
+    {
+      "comment": "Tasteless",
+      "score": 2
+    },
+    {
+      "comment": "Revolting",
+      "score": 1
+    },
+    {
+      "comment": "Appetizing",
+      "score": 5
+    },
+    {
+      "comment": "Great ambiance",
+      "score": 4
+    },
+    {
+      "comment": "Not impressive",
+      "score": 3
+    },
+    {
+      "comment": "Unappetizing",
+      "score": 2
+    },
+    {
+      "comment": "Horrendous",
+      "score": 1
+    },
+    {
+      "comment": "Savory",
+      "score": 5
+    },
+    {
+      "comment": "Pleasant service",
+      "score": 4
+    },
+    {
+      "comment": "Boring",
+      "score": 3
+    },
+    {
+      "comment": "Underwhelming",
+      "score": 2
+    },
+    {
+      "comment": "Awful service",
+      "score": 1
+    },
+    {
+      "comment": "Heavenly",
+      "score": 5
+    },
+    {
+      "comment": "Welcoming staff",
+      "score": 4
+    },
+    {
+      "comment": "Not exciting",
+      "score": 3
+    },
+    {
+      "comment": "Below average",
+      "score": 2
+    },
+    {
+      "comment": "Terrible",
+      "score": 1
+    },
+    {
+      "comment": "Divine",
+      "score": 5
+    },
+    {
+      "comment": "Great hospitality",
+      "score": 4
+    },
+    {
+      "comment": "Mildly interesting",
+      "score": 3
+    },
+    {
+      "comment": "Lackluster",
+      "score": 2
+    },
+    {
+      "comment": "Atrocious",
+      "score": 1
+    },
+    {
+      "comment": "Phenomenal",
+      "score": 5
+    },
+    {
+      "comment": "Nice staff",
+      "score": 4
+    },
+    {
+      "comment": "Moderate",
+      "score": 3
+    },
+    {
+      "comment": "Insufficient",
+      "score": 2
+    },
+    {
+      "comment": "Terrifying",
+      "score": 1
+    },
+    {
+      "comment": "Remarkable",
+      "score": 5
+    },
+    {
+      "comment": "Good hospitality",
+      "score": 4
+    },
+    {
+      "comment": "Decent",
+      "score": 3
+    },
+    {
+      "comment": "Mediocre quality",
+      "score": 2
+    },
+    {
+      "comment": "Dreadful",
+      "score": 1
+    },
+    {
+      "comment": "Fantastic",
+      "score": 5
+    },
+    {
+      "comment": "Great service",
+      "score": 4
+    },
+    {
+      "comment": "So-so experience",
+      "score": 3
+    },
+    {
+      "comment": "Bad quality",
+      "score": 2
+    },
+    {
+      "comment": "Horrific",
+      "score": 1
+    },
+    {
+      "comment": "Super delicious",
+      "score": 5
+    },
+    {
+      "comment": "Friendly staff",
+      "score": 4
+    },
+    {
+      "comment": "Average experience",
+      "score": 3
+    },
+    {
+      "comment": "Poor service",
+      "score": 2
+    },
+    {
+      "comment": "Worst experience",
+      "score": 1
+    }
+  ]
+}

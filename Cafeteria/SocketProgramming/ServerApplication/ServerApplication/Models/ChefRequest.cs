@@ -3,7 +3,7 @@
     public class ChefRequest
     {
         public string? Action {  get; set; }
-        public int ItemId { get; set; }
-        public string? NotificationMessage { get; set; }
+        public List<int> ItemIds { get; set; } = new List<int>();
+        public string? ChefMenuNotificationMessage { get; set; }
     }
 }

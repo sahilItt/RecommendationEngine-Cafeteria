@@ -47,7 +47,7 @@ namespace ServerApplication.Models
                     }
                     else if (user.Role == "chef")
                     {
-                        HandleChefRequests(reader, writer, chefService, adminService);
+                        HandleChefRequests(reader, writer, chefService);
                     }    
                     else
                     {
@@ -74,25 +74,26 @@ namespace ServerApplication.Models
             }
         }
 
-        private void HandleChefRequests(StreamReader reader, StreamWriter writer, ChefService chefService, AdminService adminService)
+        private void HandleChefRequests(StreamReader reader, StreamWriter writer, ChefService chefService)
         {
             string clientRequest;
             while ((clientRequest = reader.ReadLine()) != null)
             {
                 var request = JsonSerializer.Deserialize<ChefRequest>(clientRequest);
                 ChefResponse response = new ChefResponse();
-                AdminResponse adminResponse = new AdminResponse();
+                NotificationService notification = new NotificationService(dbHandler);
 
                 switch (request.Action)
                 {
                     case "create":
-                        response.Success = chefService.SaveNotification(request.NotificationMessage);
-                        response.Message = response.Success ? "Menu item added successfully." : "Failed to add menu item.";
+                        request.ChefMenuNotificationMessage = notification.SetMenuItemsNotification(request.ItemIds);
+                        response.Success = chefService.SaveChefMenuNotification(request.ChefMenuNotificationMessage);
+                        response.Message = response.Success ? "Chef notification saved successfully." : "Failed to add menu item.";
                         break;
                     case "read":
-                        adminResponse.MenuItems = adminService.GetMenuItems();
-                        adminResponse.Success = adminResponse.MenuItems != null;
-                        adminResponse.Message = adminResponse.Success ? "Menu items retrieved successfully." : "Failed to retrieve menu items.";
+                        response.FullMenuItems = chefService.GetFullMenuItems();
+                        response.Success = response.FullMenuItems != null;
+                        response.Message = response.Success ? "Full Menu items retrieved successfully." : "Failed to retrieve menu items.";
                         break;
                     case "readRecommendationMenu":
                         response.RecommendedMenuItems = chefService.GetRecommendedMenuItems();

@@ -7,13 +7,11 @@ namespace CafeteriaApplication.Utils
     {
         private StreamWriter writer;
         private StreamReader reader;
-        private AdminMenu adminMenu;
 
         public ChefMenu(StreamWriter writer, StreamReader reader)
         {
             this.writer = writer;
             this.reader = reader;
-            adminMenu = new(writer, reader);
         }
 
         public void ShowChefMenu()
@@ -32,7 +30,7 @@ namespace CafeteriaApplication.Utils
                 switch (option)
                 {
                     case "1":
-                        adminMenu.ViewMenuItems();
+                        ViewFullMenu();
                         break;
                     case "2":
                         ViewRecommendationItems();
@@ -50,6 +48,34 @@ namespace CafeteriaApplication.Utils
             }
         }
 
+        private void ViewFullMenu()
+        {
+            ChefRequest request = new ChefRequest { Action = "read" };
+            writer.WriteLine(JsonSerializer.Serialize(request));
+
+            string responseJson = reader.ReadLine();
+            var response = JsonSerializer.Deserialize<ChefResponse>(responseJson);
+
+            if (response.Success)
+            {
+                Console.WriteLine("{0, -5} | {1, -30} | {2, -10} | {3, -20} | {4, -20}", "ID", "Name", "Price (INR)", "Category", "Date Created");
+                Console.WriteLine(new string('-', 90));
+                foreach (var item in response.FullMenuItems)
+                {
+                    Console.WriteLine("{0, -5} | {1, -30} | {2, -10} | {3, -20} | {4, -20}",
+                        item.ItemId,
+                        item.Name,
+                        item.Price,
+                        item.Category,
+                        item.DateCreated.ToString("yyyy-MM-dd HH:mm:ss"));
+                }
+            }
+            else
+            {
+                Console.WriteLine(response.Message);
+            }
+        }
+
         private void ViewRecommendationItems()
         {
             ChefRequest request = new ChefRequest { Action = "readRecommendationMenu" };
@@ -59,14 +85,15 @@ namespace CafeteriaApplication.Utils
             var response = JsonSerializer.Deserialize<ChefResponse>(responseJson);
             if (response.Success)
             {
-                // Sort the items by sentiment score in descending order
                 var sortedItems = response.RecommendedMenuItems
                     .OrderByDescending(item => item.SentimentScore)
                     .ToList();
 
+                Console.WriteLine("{0, -30} | {1, -10}", "Name", "Sentiment Score");
+                Console.WriteLine(new string('-', 50));
                 foreach (var item in sortedItems)
                 {
-                    Console.WriteLine($"Name: {item.MenuItem}, Score: {item.SentimentScore}");
+                    Console.WriteLine("{0, -30} | {1, -10}", item.MenuItem, item.SentimentScore);
                 }
             }
             else
@@ -77,16 +104,31 @@ namespace CafeteriaApplication.Utils
 
         private void SendNextDayMenu()
         {
-            Console.WriteLine("Enter item id:");
-            int itemId = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter item IDs (comma-separated, e.g., 1,2,3):");
+            string input = Console.ReadLine();
+            string[] idStrings = input.Split(',');
 
-            ChefRequest request = new ChefRequest { Action = "create", ItemId = itemId };
+            List<int> itemIds = new List<int>();
+            foreach (string idString in idStrings)
+            {
+                if (int.TryParse(idString.Trim(), out int id))
+                {
+                    itemIds.Add(id);
+                }
+                else
+                {
+                    Console.WriteLine($"Invalid item ID: {idString.Trim()}. Skipping...");
+                }
+            }
+
+            ChefRequest request = new ChefRequest { Action = "create", ItemIds = itemIds };
             writer.WriteLine(JsonSerializer.Serialize(request));
 
             string responseJson = reader.ReadLine();
-            var response = JsonSerializer.Deserialize<AdminResponse>(responseJson);
+            var response = JsonSerializer.Deserialize<ChefResponse>(responseJson);
             Console.WriteLine(response.Message);
         }
+
 
         private void Logout()
         {

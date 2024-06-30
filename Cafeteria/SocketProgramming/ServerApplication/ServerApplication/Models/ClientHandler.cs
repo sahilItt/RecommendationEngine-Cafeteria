@@ -9,12 +9,14 @@ namespace ServerApplication.Models
         private TcpClient client;
         private Authentication authentication;
         private DbHandler dbHandler;
+        private User user;
 
         public ClientHandler(TcpClient client, Authentication authentication, DbHandler dbHandler)
         {
             this.client = client;
             this.authentication = authentication;
             this.dbHandler = dbHandler;
+            user = new();
         }
 
         public void Process()
@@ -24,13 +26,14 @@ namespace ServerApplication.Models
             StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
             AdminService adminService = new(dbHandler);
             ChefService chefService = new(dbHandler);
+            EmployeeService employeeService = new(dbHandler);
 
             try
             {
                 string jsonRequest = reader.ReadLine();
                 var request = JsonSerializer.Deserialize<LoginRequest>(jsonRequest);
 
-                User user = authentication.Login(request.Email, request.Password);
+                user = authentication.Login(request.Email, request.Password);
 
                 if (user != null)
                 {
@@ -48,6 +51,10 @@ namespace ServerApplication.Models
                     else if (user.Role == "chef")
                     {
                         HandleChefRequests(reader, writer, chefService);
+                    }
+                    else if (user.Role == "employee")
+                    {
+                        HandleEmployeeRequests(reader, writer, employeeService);
                     }    
                     else
                     {
@@ -71,41 +78,6 @@ namespace ServerApplication.Models
             finally
             {
                 client.Close();
-            }
-        }
-
-        private void HandleChefRequests(StreamReader reader, StreamWriter writer, ChefService chefService)
-        {
-            string clientRequest;
-            while ((clientRequest = reader.ReadLine()) != null)
-            {
-                var request = JsonSerializer.Deserialize<ChefRequest>(clientRequest);
-                ChefResponse response = new ChefResponse();
-                NotificationService notification = new NotificationService(dbHandler);
-
-                switch (request.Action)
-                {
-                    case "create":
-                        request.ChefMenuNotificationMessage = notification.SetMenuItemsNotification(request.ItemIds);
-                        response.Success = chefService.SaveChefMenuNotification(request.ChefMenuNotificationMessage);
-                        response.Message = response.Success ? "Chef notification saved successfully." : "Failed to add menu item.";
-                        break;
-                    case "read":
-                        response.FullMenuItems = chefService.GetFullMenuItems();
-                        response.Success = response.FullMenuItems != null;
-                        response.Message = response.Success ? "Full Menu items retrieved successfully." : "Failed to retrieve menu items.";
-                        break;
-                    case "readRecommendationMenu":
-                        response.RecommendedMenuItems = chefService.GetRecommendedMenuItems();
-                        response.Success = response.RecommendedMenuItems != null;
-                        response.Message = response.Success ? "Recommended menu items retrieved successfully." : "Failed to retrieve menu items.";
-                        break;
-                    case "logout":
-                        writer.WriteLine("Logged out");
-                        return;
-                }
-
-                writer.WriteLine(JsonSerializer.Serialize(response));
             }
         }
 
@@ -137,7 +109,75 @@ namespace ServerApplication.Models
                         response.Message = response.Success ? "Menu item deleted successfully." : "Failed to delete menu item.";
                         break;
                     case "logout":
-                        authentication.Logout(request.Email);
+                        authentication.Logout(user.Email);
+                        writer.WriteLine("Logged out");
+                        return;
+                }
+
+                writer.WriteLine(JsonSerializer.Serialize(response));
+            }
+        }
+
+        private void HandleChefRequests(StreamReader reader, StreamWriter writer, ChefService chefService)
+        {
+            string clientRequest;
+            while ((clientRequest = reader.ReadLine()) != null)
+            {
+                var request = JsonSerializer.Deserialize<ChefRequest>(clientRequest);
+                ChefResponse response = new ChefResponse();
+                NotificationService notification = new NotificationService(dbHandler);
+
+                switch (request.Action)
+                {
+                    case "create":
+                        request.ChefMenuNotificationMessage = notification.SetMenuItemsNotification(request.ItemIds);
+                        response.Success = chefService.SaveChefMenuNotification(request.ChefMenuNotificationMessage);
+                        response.Message = response.Success ? "Chef notification saved successfully." : "Failed to add menu item.";
+                        break;
+                    case "read":
+                        response.FullMenuItems = chefService.GetFullMenuItems();
+                        response.Success = response.FullMenuItems != null;
+                        response.Message = response.Success ? "Full Menu items retrieved successfully." : "Failed to retrieve menu items.";
+                        break;
+                    case "readRecommendationMenu":
+                        response.RecommendedMenuItems = chefService.GetRecommendedMenuItems();
+                        response.Success = response.RecommendedMenuItems != null;
+                        response.Message = response.Success ? "Recommended menu items retrieved successfully." : "Failed to retrieve menu items.";
+                        break;
+                    case "logout":
+                        authentication.Logout(user.Email);
+                        writer.WriteLine("Logged out");
+                        return;
+                }
+
+                writer.WriteLine(JsonSerializer.Serialize(response));
+            }
+        }
+
+        private void HandleEmployeeRequests(StreamReader reader, StreamWriter writer, EmployeeService employeeService)
+        {
+            string clientRequest;
+            while ((clientRequest = reader.ReadLine()) != null)
+            {
+                var request = JsonSerializer.Deserialize<EmployeeRequest>(clientRequest);
+                EmployeeResponse response = new EmployeeResponse();
+                NotificationService notification = new NotificationService(dbHandler);
+
+                switch (request.Action)
+                {
+                    case "createFeedback":
+                        response.Success = employeeService.AddItemFeedback(request.ItemId, request.FoodRating, request.Comment, user.Email);
+                        response.Message = response.Success ? "Menu item feedback added successfully" : "Failed to add the feedback";
+                        break;
+                    case "readNotification":
+                        response.MenuNotifications = employeeService.GetMenuNotifications();
+                        response.Success = response.MenuNotifications != null;
+                        response.Message = response.Success ? "Notification retrieved successfully." : "Failed to retrieve notification.";
+                        break;
+                    case "readRecommendationMenu":
+                        break;
+                    case "logout":
+                        authentication.Logout(user.Email);
                         writer.WriteLine("Logged out");
                         return;
                 }

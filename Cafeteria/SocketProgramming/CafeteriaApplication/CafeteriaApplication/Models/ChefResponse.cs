@@ -4,6 +4,7 @@
     {
         public bool Success { get; set; }
         public string? Message { get; set; }
+        public string? MenuVotes { get; set; }
         public List<RecommendedItem>? RecommendedMenuItems { get; set; }
         public List<FullMenuItem>? FullMenuItems { get; set; }
     }

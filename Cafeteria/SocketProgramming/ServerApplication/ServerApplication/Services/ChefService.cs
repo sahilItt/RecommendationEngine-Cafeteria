@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using ServerApplication.Models;
+using System.Text.Json;
 
 namespace ServerApplication.Services
 {
@@ -42,12 +43,35 @@ namespace ServerApplication.Services
             return menuItems;
         }
 
+        public string GetMenuVotes()
+        {
+            string query = "SELECT vote_yes, vote_no FROM notification ORDER BY notification_date DESC LIMIT 1";
+            var menuVotes = new List<object>();
+
+            using (MySqlDataReader reader = dbHandler.ExecuteReader(query))
+            {
+                while (reader.Read())
+                {
+                    var vote = new
+                    {
+                        VoteYes = reader.GetInt32("vote_yes"),
+                        VoteNo = reader.GetInt32("vote_no")
+                    };
+
+                    menuVotes.Add(vote);
+                }
+            }
+
+            return JsonSerializer.Serialize(menuVotes);
+
+        }
+
         public bool SaveChefMenuNotification(string notificationMessage)
         {
-            string query = "INSERT INTO notification (message, type, notification_date) VALUES (@NotificationMessage, 'chef', NOW())";
+            string query = "INSERT INTO notification (message, type, notification_date, vote_yes, vote_no) VALUES (@NotificationMessage, 'chef', NOW(), 0, 0)";
             MySqlParameter[] parameters = {
-            new MySqlParameter("@NotificationMessage", notificationMessage)
-        };
+                new MySqlParameter("@NotificationMessage", notificationMessage)
+            };
 
             return dbHandler.ExecuteNonQuery(query, parameters) > 0;
         }

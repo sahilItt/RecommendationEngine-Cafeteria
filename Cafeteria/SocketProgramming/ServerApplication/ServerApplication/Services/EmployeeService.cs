@@ -15,21 +15,28 @@ namespace ServerApplication.Services
             this.dbHandler = dbHandler;
         }
 
-        public List<MenuNotification> GetMenuNotifications()
+        public List<MenuNotification> GetMenuNotifications(string notificationType)
         {
-            string query = "SELECT message, type FROM notification ORDER BY notificationid";
+            string query = "select message, type, vote_yes, vote_no from notification where type = @NotificationType order by notification_date desc limit 1;";
+            MySqlParameter[] parameters = {
+                new MySqlParameter("@NotificationType", notificationType)
+            };
             List<MenuNotification> menuNotifications = new List<MenuNotification>();
 
-            using (MySqlDataReader reader = dbHandler.ExecuteReader(query))
+            using (MySqlDataReader reader = dbHandler.ExecuteReader(query, parameters))
             {
                 while (reader.Read())
                 {
                     string message = reader.GetString("message");
                     string type = reader.GetString("type");
+                    int voteYes = reader.GetInt32("vote_yes");
+                    int voteNo = reader.GetInt32("vote_no");
                     List<MenuNotificationItem> items = JsonSerializer.Deserialize<List<MenuNotificationItem>>(message);
 
                     menuNotifications.Add(new MenuNotification
                     {
+                        VoteYes = voteYes,
+                        VoteNo = voteNo,
                         Type = type,
                         Items = items
                     });
@@ -37,6 +44,21 @@ namespace ServerApplication.Services
             }
 
             return menuNotifications;
+        }
+
+        public bool AddMenuVotes(bool hasLikedMenu)
+        {
+            string query;
+            if(hasLikedMenu)
+            {
+                query = "UPDATE notification SET vote_yes = vote_yes + 1 ORDER BY notification_date DESC LIMIT 1;";
+            }
+            else
+            {
+                query = "UPDATE notification SET vote_no = vote_no + 1 ORDER BY notification_date DESC LIMIT 1;";
+            }
+
+            return dbHandler.ExecuteNonQuery(query) > 0;
         }
 
         public bool AddItemFeedback(int itemId, int foodRating, string comment, string userEmail)

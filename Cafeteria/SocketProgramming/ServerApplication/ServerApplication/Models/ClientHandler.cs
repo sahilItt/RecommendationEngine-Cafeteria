@@ -10,6 +10,7 @@ namespace ServerApplication.Models
         private Authentication authentication;
         private DbHandler dbHandler;
         private User user;
+        private NotificationService notification;
 
         public ClientHandler(TcpClient client, Authentication authentication, DbHandler dbHandler)
         {
@@ -17,6 +18,7 @@ namespace ServerApplication.Models
             this.authentication = authentication;
             this.dbHandler = dbHandler;
             user = new();
+            notification = new NotificationService(dbHandler);
         }
 
         public void Process()
@@ -93,20 +95,21 @@ namespace ServerApplication.Models
                 {
                     case "create":
                         response.Success = adminService.AddMenuItem(request.Name, request.Price, request.Category);
-                        response.Message = response.Success ? "Menu item added successfully." : "Failed to add menu item.";
+                        bool isMenuNotificationSaved = adminService.SaveAdminMenuNotification(notification.SetAdminMenuItemsNotification());
+                        response.Message = response != null && response.Success && isMenuNotificationSaved ? "Menu item added successfully & notification sent" : "Failed to add menu item.";
                         break;
                     case "read":
                         response.MenuItems = adminService.GetMenuItems();
                         response.Success = response.MenuItems != null;
-                        response.Message = response.Success ? "Menu items retrieved successfully." : "Failed to retrieve menu items.";
+                        response.Message = response != null && response.Success ? "Menu items retrieved successfully." : "Failed to retrieve menu items.";
                         break;
                     case "update":
                         response.Success = adminService.UpdateMenuItem(request.ItemId, request.Name, request.Price, request.Category);
-                        response.Message = response.Success ? "Menu item updated successfully." : "Failed to update menu item.";
+                        response.Message = response != null && response.Success ? "Menu item updated successfully." : "Failed to update menu item.";
                         break;
                     case "delete":
                         response.Success = adminService.DeleteMenuItem(request.ItemId);
-                        response.Message = response.Success ? "Menu item deleted successfully." : "Failed to delete menu item.";
+                        response.Message = response != null && response.Success ? "Menu item deleted successfully." : "Failed to delete menu item.";
                         break;
                     case "logout":
                         authentication.Logout(user.Email);
@@ -125,24 +128,28 @@ namespace ServerApplication.Models
             {
                 var request = JsonSerializer.Deserialize<ChefRequest>(clientRequest);
                 ChefResponse response = new ChefResponse();
-                NotificationService notification = new NotificationService(dbHandler);
 
                 switch (request.Action)
                 {
                     case "create":
-                        request.ChefMenuNotificationMessage = notification.SetMenuItemsNotification(request.ItemIds);
+                        request.ChefMenuNotificationMessage = notification.SetChefMenuItemsNotification(request.ItemIds);
                         response.Success = chefService.SaveChefMenuNotification(request.ChefMenuNotificationMessage);
-                        response.Message = response.Success ? "Chef notification saved successfully." : "Failed to add menu item.";
+                        response.Message = response != null && response.Success ? "Chef notification saved successfully." : "Failed to add menu item.";
                         break;
                     case "read":
                         response.FullMenuItems = chefService.GetFullMenuItems();
                         response.Success = response.FullMenuItems != null;
-                        response.Message = response.Success ? "Full Menu items retrieved successfully." : "Failed to retrieve menu items.";
+                        response.Message = response != null && response.Success ? "Full Menu items retrieved successfully." : "Failed to retrieve menu items.";
                         break;
                     case "readRecommendationMenu":
                         response.RecommendedMenuItems = chefService.GetRecommendedMenuItems();
                         response.Success = response.RecommendedMenuItems != null;
-                        response.Message = response.Success ? "Recommended menu items retrieved successfully." : "Failed to retrieve menu items.";
+                        response.Message = response != null && response.Success ? "Recommended menu items retrieved successfully." : "Failed to retrieve menu items.";
+                        break;
+                    case "viewMenuVotes":
+                        response.MenuVotes = chefService.GetMenuVotes();
+                        response.Success = response.MenuVotes != null;
+                        response.Message = response != null && response.Success ? "Menu Votes retrieved successfully" : "Failed to retrieve menu votes";
                         break;
                     case "logout":
                         authentication.Logout(user.Email);
@@ -167,14 +174,16 @@ namespace ServerApplication.Models
                 {
                     case "createFeedback":
                         response.Success = employeeService.AddItemFeedback(request.ItemId, request.FoodRating, request.Comment, user.Email);
-                        response.Message = response.Success ? "Menu item feedback added successfully" : "Failed to add the feedback";
+                        response.Message = response != null && response.Success ? "Menu item feedback added successfully" : "Failed to add the feedback";
                         break;
                     case "readNotification":
-                        response.MenuNotifications = employeeService.GetMenuNotifications();
+                        response.MenuNotifications = employeeService.GetMenuNotifications(request.NotificationType);
                         response.Success = response.MenuNotifications != null;
-                        response.Message = response.Success ? "Notification retrieved successfully." : "Failed to retrieve notification.";
+                        response.Message = response != null && response.Success ? "Notification retrieved successfully." : "Failed to retrieve notification.";
                         break;
-                    case "readRecommendationMenu":
+                    case "submitVote":
+                        response.Success = employeeService.AddMenuVotes(request.HasLikedMenu);
+                        response.Message = response != null && response.Success ? "Your vote has been recorded successfully." : "Failed to record your vote. Please try again.";
                         break;
                     case "logout":
                         authentication.Logout(user.Email);

@@ -23,7 +23,8 @@ namespace CafeteriaApplication.Utils
                 Console.WriteLine("1. View Menu");
                 Console.WriteLine("2. View Recommendation");
                 Console.WriteLine("3. Send Menu for Next Day");
-                Console.WriteLine("4. Logout");
+                Console.WriteLine("4. View Menu Votes");
+                Console.WriteLine("5. Logout");
 
                 string option = Console.ReadLine();
 
@@ -39,6 +40,9 @@ namespace CafeteriaApplication.Utils
                         SendNextDayMenu();
                         break;
                     case "4":
+                        ViewMenuVotes();
+                        break;
+                    case "5":
                         Logout();
                         return;
                     default:
@@ -94,6 +98,42 @@ namespace CafeteriaApplication.Utils
                 foreach (var item in sortedItems)
                 {
                     Console.WriteLine("{0, -30} | {1, -10}", item.MenuItem, item.SentimentScore);
+                }
+            }
+            else
+            {
+                Console.WriteLine(response.Message);
+            }
+        }
+
+        private void ViewMenuVotes()
+        {
+            ChefRequest request = new ChefRequest { Action = "viewMenuVotes" };
+            writer.WriteLine(JsonSerializer.Serialize(request));
+
+            string responseJson = reader.ReadLine();
+            var response = JsonSerializer.Deserialize<ChefResponse>(responseJson);
+
+            if (response.Success)
+            {
+                using (JsonDocument document = JsonDocument.Parse(response.MenuVotes))
+                {
+                    var votesArray = document.RootElement;
+
+                    if (votesArray.ValueKind == JsonValueKind.Array && votesArray.GetArrayLength() > 0)
+                    {
+                        var votes = votesArray[0];
+                        int voteYes = votes.GetProperty("VoteYes").GetInt32();
+                        int voteNo = votes.GetProperty("VoteNo").GetInt32();
+
+                        Console.WriteLine("Total Votes for menu: ");
+                        Console.WriteLine("{0, -10} | {1, -10}", "VoteYes", "VoteNo");
+                        Console.WriteLine("{0, -10} | {1, -10}", voteYes, voteNo);
+                    }
+                    else
+                    {
+                        Console.WriteLine("No vote data available.");
+                    }
                 }
             }
             else

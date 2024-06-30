@@ -40,10 +40,10 @@ namespace ServerApplication.Services
         {
             string query = "INSERT INTO menu_item (name, price, category, date_created) VALUES (@Name, @Price, @Category, NOW())";
             MySqlParameter[] parameters = {
-            new MySqlParameter("@Name", name),
-            new MySqlParameter("@Price", price),
-            new MySqlParameter("@Category", category)
-        };
+                new MySqlParameter("@Name", name),
+                new MySqlParameter("@Price", price),
+                new MySqlParameter("@Category", category)
+            };
 
             return dbHandler.ExecuteNonQuery(query, parameters) > 0;
         }
@@ -52,11 +52,11 @@ namespace ServerApplication.Services
         {
             string query = "UPDATE menu_item SET name = @Name, price = @Price, category = @Category WHERE itemid = @ItemId";
             MySqlParameter[] parameters = {
-            new MySqlParameter("@ItemId", itemId),
-            new MySqlParameter("@Name", name),
-            new MySqlParameter("@Price", price),
-            new MySqlParameter("@Category", category)
-        };
+                new MySqlParameter("@ItemId", itemId),
+                new MySqlParameter("@Name", name),
+                new MySqlParameter("@Price", price),
+                new MySqlParameter("@Category", category)
+            };
 
             return dbHandler.ExecuteNonQuery(query, parameters) > 0;
         }
@@ -65,8 +65,18 @@ namespace ServerApplication.Services
         {
             string query = "DELETE FROM menu_item WHERE itemid = @ItemId";
             MySqlParameter[] parameters = {
-            new MySqlParameter("@ItemId", itemId)
-        };
+                new MySqlParameter("@ItemId", itemId)
+            };
+
+            return dbHandler.ExecuteNonQuery(query, parameters) > 0;
+        }
+
+        public bool SaveAdminMenuNotification(string notificationMessage)
+        {
+            string query = "INSERT INTO notification (message, type, notification_date, vote_yes, vote_no) VALUES (@NotificationMessage, 'admin', NOW(), 0, 0)";
+            MySqlParameter[] parameters = {
+                new MySqlParameter("@NotificationMessage", notificationMessage)
+            };
 
             return dbHandler.ExecuteNonQuery(query, parameters) > 0;
         }

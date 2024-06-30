@@ -19,7 +19,7 @@ namespace CafeteriaApplication.Utils
             while (true)
             {
                 Console.WriteLine();
-                Console.WriteLine("Chef Menu:");
+                Console.WriteLine("Employee Menu:");
                 Console.WriteLine("1. View Notification");
                 Console.WriteLine("2. Vote Items");
                 Console.WriteLine("3. Give Feedback & Rating");
@@ -50,25 +50,37 @@ namespace CafeteriaApplication.Utils
 
         private void ViewNotification()
         {
-            EmployeeRequest request = new EmployeeRequest { Action = "readNotification" };
+            Console.Write("Enter the notification type (1 for Admin, any other key for Chef): ");
+            string notificationType = Console.ReadLine() == "1" ? "admin" : "chef";
+
+            EmployeeRequest request = new EmployeeRequest { Action = "readNotification", NotificationType = notificationType };
             writer.WriteLine(JsonSerializer.Serialize(request));
 
             string responseJson = reader.ReadLine();
             var response = JsonSerializer.Deserialize<EmployeeResponse>(responseJson);
 
-            if(response.Success)
+            if (response.Success)
             {
-                Console.WriteLine("{0, -5} | {1, -30} | {2, -10}", "ItemName", "Price (INR)", "Category");
-                Console.WriteLine(new string('-', 90));
-                foreach (var menuNotificationItem in response.MenuNotifications)
+                foreach (var menuNotification in response.MenuNotifications)
                 {
-                    foreach (var item in menuNotificationItem.Items)
+                    Console.WriteLine($"Notification Type: {menuNotification.Type}");
+                    Console.WriteLine("{0, -10} | {1, -30} | {2, -10} | {3, -10}", "ItemId", "ItemName", "Price (INR)", "Category");
+                    Console.WriteLine(new string('-', 90));
+
+                    foreach (var item in menuNotification.Items)
                     {
-                        Console.WriteLine("{0, -5} | {1, -30} | {2, -10}",
+
+                        Console.WriteLine("{0, -10} | {1, -30} | {2, -10} | {3, -10}",
+                        item.ItemId,
                         item.ItemName,
                         item.Price,
                         item.Category);
                     }
+
+                    Console.WriteLine(new string('-', 90));
+                    Console.WriteLine("Total Votes for menu: ");
+                    Console.WriteLine("{0, -10} | {1, -10}", "VoteYes", "VoteNo");
+                    Console.WriteLine("{0, -10} | {1, -10}", menuNotification.VoteYes, menuNotification.VoteNo);
                 }
             }
             else
@@ -77,8 +89,36 @@ namespace CafeteriaApplication.Utils
             }
         }
 
-        private void VoteItems() 
+        private void VoteItems()
         {
+            Console.Write("Do you like the menu? (yes/no): ");
+            string feedback;
+            while (true)
+            {
+                feedback = Console.ReadLine()?.Trim().ToLower();
+                if (feedback == "yes" || feedback == "no")
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter 'yes' or 'no'.");
+                    Console.Write("Do you like the menu? (yes/no): ");
+                }
+            }
+
+            EmployeeRequest request = new EmployeeRequest
+            {
+                Action = "submitVote",
+                HasLikedMenu = (feedback == "yes")
+            };
+
+            writer.WriteLine(JsonSerializer.Serialize(request));
+
+            string responseJson = reader.ReadLine();
+            var response = JsonSerializer.Deserialize<EmployeeResponse>(responseJson);
+
+            Console.WriteLine(response.Message);
         }
 
         private void GiveFeedback()

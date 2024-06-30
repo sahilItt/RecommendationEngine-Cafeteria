@@ -66,7 +66,7 @@ namespace ServerApplication.Services
             }
         }
 
-        public int ExecuteNonQuery(string query, MySqlParameter[] parameters)
+        public int ExecuteNonQuery(string query, MySqlParameter[] parameters = null)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {

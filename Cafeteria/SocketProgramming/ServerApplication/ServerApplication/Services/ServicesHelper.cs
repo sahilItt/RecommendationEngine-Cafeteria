@@ -27,10 +27,10 @@ namespace ServerApplication.Services
             return JsonSerializer.Serialize(discardMenu);
         }
 
-        private static List<(string, double)> FetchDiscardRecommendationItems(DbHandler dbHandler)
+        private static List<(string, double, string)> FetchDiscardRecommendationItems(DbHandler dbHandler)
         {
-            string query = "select recommended_items, sentiment_score from food_recommendation where sentiment_score <= 2";
-            List<(string, double)> recommendations = new List<(string, double)>();
+            string query = "select recommended_items, sentiment_score, sentiments from food_recommendation where sentiment_score <= 2";
+            List<(string, double, string)> recommendations = new List<(string, double, string)>();
 
             using (MySqlDataReader reader = dbHandler.ExecuteReader(query))
             {
@@ -38,7 +38,8 @@ namespace ServerApplication.Services
                 {
                     string recommendedItems = reader.GetString("recommended_items");
                     double sentimentScore = reader.GetDouble("sentiment_score");
-                    recommendations.Add((recommendedItems, sentimentScore));
+                    string sentiments = reader.GetString("sentiments");
+                    recommendations.Add((recommendedItems, sentimentScore, sentiments));
                 }
             }
 
@@ -47,7 +48,7 @@ namespace ServerApplication.Services
 
         public static string ViewDiscardItems(DbHandler dbHandler)
         {
-            string query = "select food_item, average_rating from discard_menu";
+            string query = "select food_item, average_rating, sentiments from discard_menu";
             var discardMenu = new List<object>();
 
             using (MySqlDataReader reader = dbHandler.ExecuteReader(query))
@@ -57,7 +58,8 @@ namespace ServerApplication.Services
                     var menuItem = new
                     {
                         FoodItem = reader.GetString("food_item"),
-                        AverageRating = reader.GetDouble("average_rating")
+                        AverageRating = reader.GetDouble("average_rating"),
+                        Sentiments = reader.GetString("sentiments")
                     };
 
                     discardMenu.Add(menuItem);
@@ -69,16 +71,17 @@ namespace ServerApplication.Services
 
         public static void AddDiscardItems(DbHandler dbHandler)
         {
-            List<(string, double)> discardedRecommendationItems = FetchDiscardRecommendationItems(dbHandler);
+            List<(string, double, string)> discardedRecommendationItems = FetchDiscardRecommendationItems(dbHandler);
             foreach (var recommendation in discardedRecommendationItems)
             {
                 if (!IsItemInDiscardMenu(recommendation.Item1, dbHandler))
                 {
-                    string query = "INSERT INTO discard_menu (food_item, average_rating, date_added) VALUES (@FoodItem, @AverageRating, NOW())";
+                    string query = "INSERT INTO discard_menu (food_item, average_rating, sentiments, date_added) VALUES (@FoodItem, @AverageRating, @Sentiments, NOW())";
 
                     MySqlParameter[] parameters = {
                         new MySqlParameter("@FoodItem", recommendation.Item1),
-                        new MySqlParameter("@AverageRating", recommendation.Item2)
+                        new MySqlParameter("@AverageRating", recommendation.Item2),
+                        new MySqlParameter("@Sentiments", recommendation.Item3)
                     };
 
                     dbHandler.ExecuteNonQuery(query, parameters);

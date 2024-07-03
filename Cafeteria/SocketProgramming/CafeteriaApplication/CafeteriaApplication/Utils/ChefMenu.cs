@@ -98,11 +98,11 @@ namespace CafeteriaApplication.Utils
                     .OrderByDescending(item => item.SentimentScore)
                     .ToList();
 
-                Console.WriteLine("{0, -30} | {1, -10}", "Name", "Sentiment Score");
-                Console.WriteLine(new string('-', 50));
+                Console.WriteLine("{0, -30} | {1, -10} | {2, -10}", "Name", "Sentiment Score", "Sentiments");
+                Console.WriteLine(new string('-', 90));
                 foreach (var item in sortedItems)
                 {
-                    Console.WriteLine("{0, -30} | {1, -10}", item.MenuItem, item.SentimentScore);
+                    Console.WriteLine("{0, -30} | {1, -10} | {2, -10}", item.MenuItem, item.SentimentScore, item.Sentiments);
                 }
             }
             else

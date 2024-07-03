@@ -21,15 +21,16 @@ namespace CafeteriaApplication.Utils
                 if (discardMenuArray.ValueKind == JsonValueKind.Array && discardMenuArray.GetArrayLength() > 0)
                 {
                     Console.WriteLine("Total discarded items in menu: " + discardMenuArray.GetArrayLength());
-                    Console.WriteLine("{0, -20} | {1, -15}", "Food Item", "Average Rating");
-                    Console.WriteLine(new string('-', 20));
+                    Console.WriteLine("{0, -20} | {1, -15} | {2, -15}", "Food Item", "Average Rating", "Sentiments");
+                    Console.WriteLine(new string('-', 90));
 
                     foreach (var discardMenu in discardMenuArray.EnumerateArray())
                     {
                         string foodItem = discardMenu.GetProperty("FoodItem").GetString();
                         double averageRating = discardMenu.GetProperty("AverageRating").GetDouble();
+                        string sentiments = discardMenu.GetProperty("Sentiments").GetString();
 
-                        Console.WriteLine("{0, -20} | {1, -15:F2}", foodItem, averageRating);
+                        Console.WriteLine("{0, -20} | {1, -15} | {2, -15}", foodItem, averageRating, sentiments);
                     }
                 }
                 else

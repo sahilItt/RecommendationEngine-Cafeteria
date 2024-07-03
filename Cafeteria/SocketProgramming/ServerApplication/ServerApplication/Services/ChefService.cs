@@ -26,12 +26,13 @@ namespace ServerApplication.Services
             }
             else
             {
-                string insertQuery = "INSERT INTO food_recommendation (date_created, recommended_items, sentiment_score) VALUES (NOW(), @RecommendedItems, @SentimentScore)";
+                string insertQuery = "INSERT INTO food_recommendation (date_created, recommended_items, sentiment_score, sentiments) VALUES (NOW(), @RecommendedItems, @SentimentScore, @Sentiments)";
                 foreach (var item in recommendedItems)
                 {
                     MySqlParameter[] parameters = {
                         new MySqlParameter("@RecommendedItems", item.MenuItem),
-                        new MySqlParameter("@SentimentScore", item.SentimentScore)
+                        new MySqlParameter("@SentimentScore", item.SentimentScore),
+                        new MySqlParameter("@Sentiments", item.Sentiments)
                     };
                     dbHandler.ExecuteNonQuery(insertQuery, parameters);
                 }

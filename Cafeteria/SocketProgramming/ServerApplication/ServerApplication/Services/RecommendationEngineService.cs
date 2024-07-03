@@ -45,10 +45,12 @@ namespace ServerApplication.Services
             foreach (var item in foodItemFeedback)
             {
                 double score = GetSentimentScores(item.Value);
+                string sentimentTexts = GetSentimentTexts(item.Value);
                 result.Add(new RecommendedItem
                 {
                     MenuItem = item.Key,
-                    SentimentScore = score
+                    SentimentScore = score,
+                    Sentiments = sentimentTexts
                 });
             }
 
@@ -75,6 +77,30 @@ namespace ServerApplication.Services
             }
 
             return totalScore/commentsWithRatings.Count;
+        }
+
+        private string GetSentimentTexts(List<FeedbackDetail> commentsWithRatings)
+        {
+            List<string> sentimentTexts = new List<string>();
+
+            foreach (var item in commentsWithRatings)
+            {
+                foreach (var preset in presetComments)
+                {
+                    if (item.Comment.Contains(preset.Key, StringComparison.OrdinalIgnoreCase))
+                    {
+                        sentimentTexts.Add(preset.Key);
+                        break;
+                    }
+                }
+            }
+
+            if (sentimentTexts.Count == 0)
+            {
+                return "NA";
+            }
+
+            return string.Join(", ", sentimentTexts);
         }
     }
 }

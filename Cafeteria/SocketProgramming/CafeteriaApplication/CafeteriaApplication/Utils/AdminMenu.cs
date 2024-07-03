@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Text.Json;
 using CafeteriaApplication.Models;
+using static CafeteriaApplication.Utils.MenuHelper;
 
 namespace CafeteriaApplication.Utils
 {
@@ -25,7 +26,8 @@ namespace CafeteriaApplication.Utils
                 Console.WriteLine("2. View Menu Items");
                 Console.WriteLine("3. Update Menu Item");
                 Console.WriteLine("4. Delete Menu Item");
-                Console.WriteLine("5. Logout");
+                Console.WriteLine("5. View Discard Menu Item List");
+                Console.WriteLine("6. Logout");
 
                 string option = Console.ReadLine();
 
@@ -44,6 +46,9 @@ namespace CafeteriaApplication.Utils
                         DeleteMenuItem();
                         break;
                     case "5":
+                        ViewDiscardMenuItems();
+                        break;
+                    case "6":
                         Logout();
                         return;
                     default:
@@ -80,15 +85,30 @@ namespace CafeteriaApplication.Utils
 
             if (response.Success)
             {
+                Console.WriteLine(new string('-', 50));
+                Console.WriteLine("| {0, -5} | {1, -20} | {2, -10} | {3, -15} | {4, -20} |", "ID", "Name", "Price (INR)", "Category", "Date Created");
+                Console.WriteLine(new string('-', 50));
                 foreach (var item in response.MenuItems)
                 {
-                    Console.WriteLine($"ID: {item.ItemId}, Name: {item.Name}, Price: {item.Price} INR, Category: {item.Category}, Date Created: {item.DateCreated}");
+                    Console.WriteLine("| {0, -5} | {1, -20} | {2, -10} | {3, -15} | {4, -20} |",
+                        item.ItemId,
+                        item.Name,
+                        item.Price,
+                        item.Category,
+                        item.DateCreated);
                 }
+                Console.WriteLine(new string('-', 50));
             }
             else
             {
                 Console.WriteLine(response.Message);
             }
+        }
+
+        private void ViewDiscardMenuItems()
+        {
+            AdminRequest request = new AdminRequest { Action = "readDiscardMenu" };
+            DiscardMenuItems(writer, reader, request);
         }
 
         private void UpdateMenuItem()

@@ -82,5 +82,17 @@ namespace ServerApplication.Services
                 }
             }
         }
+
+        public int ExecuteScalar(string query)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    return Convert.ToInt32(command.ExecuteScalar());
+                }
+            }
+        }
     }
 }

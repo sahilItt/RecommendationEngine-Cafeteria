@@ -1,6 +1,6 @@
-﻿using MySql.Data.MySqlClient;
+﻿using System.Text.Json;
+using MySql.Data.MySqlClient;
 using ServerApplication.Models;
-using System.Text.Json;
 
 namespace ServerApplication.Services
 {
@@ -17,7 +17,30 @@ namespace ServerApplication.Services
 
         public List<RecommendedItem> GetRecommendedMenuItems()
         {
-            return recommendationEngineService.GenerateRecommendationMenu();
+            List<RecommendedItem> recommendedItems = recommendationEngineService.GenerateRecommendationMenu();
+            string checkQuery = "SELECT COUNT(*) FROM food_recommendation WHERE date_created = CURDATE()";
+            int count = dbHandler.ExecuteScalar(checkQuery);
+            if (count > 0)
+            {
+                return recommendedItems;
+            }
+            else
+            {
+                string insertQuery = "INSERT INTO food_recommendation (date_created, recommended_items, sentiment_score) VALUES (NOW(), @RecommendedItems, @SentimentScore)";
+                foreach (var item in recommendedItems)
+                {
+                    MySqlParameter[] parameters = {
+                        new MySqlParameter("@RecommendedItems", item.MenuItem),
+                        new MySqlParameter("@SentimentScore", item.SentimentScore)
+                    };
+                    dbHandler.ExecuteNonQuery(insertQuery, parameters);
+                }
+            }
+
+            string deleteQuery = "DELETE FROM food_recommendation WHERE date_created != CURDATE()";
+            dbHandler.ExecuteNonQuery(deleteQuery);
+
+            return recommendedItems;
         }
 
         public List<FullMenuItem> GetFullMenuItems()
@@ -63,7 +86,6 @@ namespace ServerApplication.Services
             }
 
             return JsonSerializer.Serialize(menuVotes);
-
         }
 
         public bool SaveChefMenuNotification(string notificationMessage)

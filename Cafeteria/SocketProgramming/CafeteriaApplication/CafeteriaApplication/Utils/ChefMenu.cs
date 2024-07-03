@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using CafeteriaApplication.Models;
+using static CafeteriaApplication.Utils.MenuHelper;
 
 namespace CafeteriaApplication.Utils
 {
@@ -24,7 +25,8 @@ namespace CafeteriaApplication.Utils
                 Console.WriteLine("2. View Recommendation");
                 Console.WriteLine("3. Send Menu for Next Day");
                 Console.WriteLine("4. View Menu Votes");
-                Console.WriteLine("5. Logout");
+                Console.WriteLine("5. View Discard Menu Item List");
+                Console.WriteLine("6. Logout");
 
                 string option = Console.ReadLine();
 
@@ -43,6 +45,9 @@ namespace CafeteriaApplication.Utils
                         ViewMenuVotes();
                         break;
                     case "5":
+                        ViewDiscardMenuItems();
+                        break;
+                    case "6":
                         Logout();
                         return;
                     default:
@@ -140,6 +145,12 @@ namespace CafeteriaApplication.Utils
             {
                 Console.WriteLine(response.Message);
             }
+        }
+
+        private void ViewDiscardMenuItems()
+        {
+            ChefRequest request = new ChefRequest { Action = "readDiscardMenu" };
+            DiscardMenuItems(writer, reader, request);
         }
 
         private void SendNextDayMenu()

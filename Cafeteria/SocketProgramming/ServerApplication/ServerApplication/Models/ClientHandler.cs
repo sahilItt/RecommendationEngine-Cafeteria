@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text.Json;
 using ServerApplication.Services;
+using static ServerApplication.Services.ServicesHelper;
 
 namespace ServerApplication.Models
 {
@@ -103,6 +104,12 @@ namespace ServerApplication.Models
                         response.Success = response.MenuItems != null;
                         response.Message = response != null && response.Success ? "Menu items retrieved successfully." : "Failed to retrieve menu items.";
                         break;
+                    case "readDiscardMenu":
+                        AddDiscardItems(dbHandler);
+                        response.DiscardMenu = ViewDiscardItems(dbHandler);
+                        response.Success = response.DiscardMenu != null;
+                        response.Message = response != null && response.Success ? "Discard Menu items retrieved successfully." : "Failed to retrieve Discard menu items.";
+                        break;
                     case "update":
                         response.Success = adminService.UpdateMenuItem(request.ItemId, request.Name, request.Price, request.Category);
                         response.Message = response != null && response.Success ? "Menu item updated successfully." : "Failed to update menu item.";
@@ -150,6 +157,12 @@ namespace ServerApplication.Models
                         response.MenuVotes = chefService.GetMenuVotes();
                         response.Success = response.MenuVotes != null;
                         response.Message = response != null && response.Success ? "Menu Votes retrieved successfully" : "Failed to retrieve menu votes";
+                        break;
+                    case "readDiscardMenu":
+                        AddDiscardItems(dbHandler);
+                        response.DiscardMenu = ViewDiscardItems(dbHandler);
+                        response.Success = response.DiscardMenu != null;
+                        response.Message = response != null && response.Success ? "Discard Menu items retrieved successfully." : "Failed to retrieve Discard menu items.";
                         break;
                     case "logout":
                         authentication.Logout(user.Email);

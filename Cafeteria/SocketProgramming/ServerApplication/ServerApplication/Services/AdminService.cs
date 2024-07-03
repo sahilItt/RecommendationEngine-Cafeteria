@@ -1,6 +1,6 @@
-﻿using MySql.Data.MySqlClient;
+﻿using System.Text.Json;
+using MySql.Data.MySqlClient;
 using ServerApplication.Models;
-using System.Data;
 
 namespace ServerApplication.Services
 {

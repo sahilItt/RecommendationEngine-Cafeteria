@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text.Json;
+using CafeteriaApplication.Controller;
 using CafeteriaApplication.Models;
-using CafeteriaApplication.Utils;
 
 namespace CafeteriaApplication.Services
 {
@@ -11,9 +11,9 @@ namespace CafeteriaApplication.Services
         private const int ServerPort = 12345;
 
         private User currentUser;
-        private AdminMenu adminMenu;
-        private ChefMenu chefMenu;
-        private EmployeeMenu employeeMenu;
+        private AdminController adminMenu;
+        private ChefController chefMenu;
+        private EmployeeController employeeMenu;
 
         public void Run()
         {

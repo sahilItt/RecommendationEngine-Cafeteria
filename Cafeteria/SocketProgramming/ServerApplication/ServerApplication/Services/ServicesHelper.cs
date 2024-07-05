@@ -1,10 +1,33 @@
-﻿using System.Text.Json;
+﻿using System.Dynamic;
+using System.Text.Json;
 using MySql.Data.MySqlClient;
 
 namespace ServerApplication.Services
 {
     public static class ServicesHelper
     {
+        public static List<dynamic> GetFullMenuItems(DbHandler dbHandler)
+        {
+            string query = "SELECT itemid, name, price, category, date_created FROM menu_item ORDER BY itemid";
+            List<dynamic> menuItems = new List<dynamic>();
+
+            using (MySqlDataReader reader = dbHandler.ExecuteReader(query))
+            {
+                while (reader.Read())
+                {
+                    dynamic menuItem = new ExpandoObject();
+                    menuItem.ItemId = reader.GetInt32("itemid");
+                    menuItem.Name = reader.GetString("name");
+                    menuItem.Price = reader.GetInt32("price");
+                    menuItem.Category = reader.GetString("category");
+                    menuItem.DateCreated = reader.GetDateTime("date_created");
+                    menuItems.Add(menuItem);
+                }
+            }
+
+            return menuItems;
+        }
+
         public static string FetchDiscardMenu(DbHandler dbHandler)
         {
             string query = "SELECT food_item, average_rating FROM discard_menu";

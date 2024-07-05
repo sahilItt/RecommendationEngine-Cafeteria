@@ -2,14 +2,14 @@
 using CafeteriaApplication.Models;
 using static CafeteriaApplication.Utils.MenuHelper;
 
-namespace CafeteriaApplication.Utils
+namespace CafeteriaApplication.Controller
 {
-    public class ChefMenu
+    public class ChefController
     {
         private StreamWriter writer;
         private StreamReader reader;
 
-        public ChefMenu(StreamWriter writer, StreamReader reader)
+        public ChefController(StreamWriter writer, StreamReader reader)
         {
             this.writer = writer;
             this.reader = reader;
@@ -33,7 +33,8 @@ namespace CafeteriaApplication.Utils
                 switch (option)
                 {
                     case "1":
-                        ViewFullMenu();
+                        ChefRequest request = new ChefRequest { Action = "read" };
+                        ViewMenuItems(writer, reader, request);
                         break;
                     case "2":
                         ViewRecommendationItems();
@@ -54,34 +55,6 @@ namespace CafeteriaApplication.Utils
                         Console.WriteLine("Invalid option. Please choose again.");
                         break;
                 }
-            }
-        }
-
-        private void ViewFullMenu()
-        {
-            ChefRequest request = new ChefRequest { Action = "read" };
-            writer.WriteLine(JsonSerializer.Serialize(request));
-
-            string responseJson = reader.ReadLine();
-            var response = JsonSerializer.Deserialize<ChefResponse>(responseJson);
-
-            if (response.Success)
-            {
-                Console.WriteLine("{0, -5} | {1, -30} | {2, -10} | {3, -20} | {4, -20}", "ID", "Name", "Price (INR)", "Category", "Date Created");
-                Console.WriteLine(new string('-', 90));
-                foreach (var item in response.FullMenuItems)
-                {
-                    Console.WriteLine("{0, -5} | {1, -30} | {2, -10} | {3, -20} | {4, -20}",
-                        item.ItemId,
-                        item.Name,
-                        item.Price,
-                        item.Category,
-                        item.DateCreated.ToString("yyyy-MM-dd HH:mm:ss"));
-                }
-            }
-            else
-            {
-                Console.WriteLine(response.Message);
             }
         }
 

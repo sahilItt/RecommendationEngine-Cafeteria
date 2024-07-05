@@ -1,16 +1,15 @@
-﻿using System.Data;
-using System.Text.Json;
+﻿using System.Text.Json;
 using CafeteriaApplication.Models;
 using static CafeteriaApplication.Utils.MenuHelper;
 
-namespace CafeteriaApplication.Utils
+namespace CafeteriaApplication.Controller
 {
-    public class AdminMenu
+    public class AdminController
     {
         private StreamWriter writer;
         private StreamReader reader;
 
-        public AdminMenu(StreamWriter writer, StreamReader reader)
+        public AdminController(StreamWriter writer, StreamReader reader)
         {
             this.writer = writer;
             this.reader = reader;
@@ -22,8 +21,8 @@ namespace CafeteriaApplication.Utils
             {
                 Console.WriteLine();
                 Console.WriteLine("Admin Menu:");
-                Console.WriteLine("1. Add Menu Item");
-                Console.WriteLine("2. View Menu Items");
+                Console.WriteLine("1. View Menu Items");
+                Console.WriteLine("2. Add Menu Item");
                 Console.WriteLine("3. Update Menu Item");
                 Console.WriteLine("4. Delete Menu Item");
                 Console.WriteLine("5. View Discard Menu Item List");
@@ -34,10 +33,11 @@ namespace CafeteriaApplication.Utils
                 switch (option)
                 {
                     case "1":
-                        AddMenuItem();
+                        AdminRequest request = new AdminRequest { Action = "read" };
+                        ViewMenuItems(writer, reader, request);
                         break;
                     case "2":
-                        ViewMenuItems();
+                        AddMenuItem();
                         break;
                     case "3":
                         UpdateMenuItem();
@@ -73,36 +73,6 @@ namespace CafeteriaApplication.Utils
             string responseJson = reader.ReadLine();
             var response = JsonSerializer.Deserialize<AdminResponse>(responseJson);
             Console.WriteLine(response.Message);
-        }
-
-        public void ViewMenuItems()
-        {
-            AdminRequest request = new AdminRequest { Action = "read" };
-            writer.WriteLine(JsonSerializer.Serialize(request));
-
-            string responseJson = reader.ReadLine();
-            var response = JsonSerializer.Deserialize<AdminResponse>(responseJson);
-
-            if (response.Success)
-            {
-                Console.WriteLine(new string('-', 50));
-                Console.WriteLine("| {0, -5} | {1, -20} | {2, -10} | {3, -15} | {4, -20} |", "ID", "Name", "Price (INR)", "Category", "Date Created");
-                Console.WriteLine(new string('-', 50));
-                foreach (var item in response.MenuItems)
-                {
-                    Console.WriteLine("| {0, -5} | {1, -20} | {2, -10} | {3, -15} | {4, -20} |",
-                        item.ItemId,
-                        item.Name,
-                        item.Price,
-                        item.Category,
-                        item.DateCreated);
-                }
-                Console.WriteLine(new string('-', 50));
-            }
-            else
-            {
-                Console.WriteLine(response.Message);
-            }
         }
 
         private void ViewDiscardMenuItems()

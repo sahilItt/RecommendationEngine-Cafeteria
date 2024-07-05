@@ -7,7 +7,7 @@
         public string? MenuVotes { get; set; }
         public string? DiscardMenu { get; set; }
         public List<RecommendedItem>? RecommendedMenuItems { get; set; }
-        public List<FullMenuItem>? FullMenuItems { get; set; }
+        public List<dynamic>? MenuItems { get; set; }
     }
 
     public class FullMenuItem

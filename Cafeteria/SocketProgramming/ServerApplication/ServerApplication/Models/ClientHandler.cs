@@ -100,7 +100,7 @@ namespace ServerApplication.Models
                         response.Message = response != null && response.Success && isMenuNotificationSaved ? "Menu item added successfully & notification sent" : "Failed to add menu item.";
                         break;
                     case "read":
-                        response.MenuItems = adminService.GetMenuItems();
+                        response.MenuItems = GetFullMenuItems(dbHandler);
                         response.Success = response.MenuItems != null;
                         response.Message = response != null && response.Success ? "Menu items retrieved successfully." : "Failed to retrieve menu items.";
                         break;
@@ -144,8 +144,8 @@ namespace ServerApplication.Models
                         response.Message = response != null && response.Success ? "Chef notification saved successfully." : "Failed to add menu item.";
                         break;
                     case "read":
-                        response.FullMenuItems = chefService.GetFullMenuItems();
-                        response.Success = response.FullMenuItems != null;
+                        response.MenuItems = GetFullMenuItems(dbHandler);
+                        response.Success = response.MenuItems != null;
                         response.Message = response != null && response.Success ? "Full Menu items retrieved successfully." : "Failed to retrieve menu items.";
                         break;
                     case "readRecommendationMenu":

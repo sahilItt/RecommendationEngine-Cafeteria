@@ -1,14 +1,14 @@
 ﻿using System.Text.Json;
 using CafeteriaApplication.Models;
 
-namespace CafeteriaApplication.Utils
+namespace CafeteriaApplication.Controller
 {
-    public class EmployeeMenu
+    public class EmployeeController
     {
         private StreamWriter writer;
         private StreamReader reader;
 
-        public EmployeeMenu(StreamWriter writer, StreamReader reader)
+        public EmployeeController(StreamWriter writer, StreamReader reader)
         {
             this.writer = writer;
             this.reader = reader;
@@ -110,7 +110,7 @@ namespace CafeteriaApplication.Utils
             EmployeeRequest request = new EmployeeRequest
             {
                 Action = "submitVote",
-                HasLikedMenu = (feedback == "yes")
+                HasLikedMenu = feedback == "yes"
             };
 
             writer.WriteLine(JsonSerializer.Serialize(request));

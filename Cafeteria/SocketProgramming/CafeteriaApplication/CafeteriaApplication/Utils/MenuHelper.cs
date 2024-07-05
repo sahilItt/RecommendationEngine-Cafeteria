@@ -1,11 +1,40 @@
-﻿using CafeteriaApplication.Models;
-using System.Reflection.PortableExecutable;
+﻿using System.Reflection.PortableExecutable;
 using System.Text.Json;
+using CafeteriaApplication.Models;
 
 namespace CafeteriaApplication.Utils
 {
     public static class MenuHelper
     {
+        public static void ViewMenuItems(StreamWriter writer, StreamReader reader, object request)
+        {
+            writer.WriteLine(JsonSerializer.Serialize(request));
+
+            string responseJson = reader.ReadLine();
+            var response = JsonSerializer.Deserialize<JsonElement>(responseJson);
+
+            if (response.GetProperty("Success").GetBoolean())
+            {
+                Console.WriteLine(new string('-', 50));
+                Console.WriteLine("| {0, -5} | {1, -20} | {2, -10} | {3, -15} | {4, -20} |", "ID", "Name", "Price (INR)", "Category", "Date Created");
+                Console.WriteLine(new string('-', 100));
+                foreach (var item in response.GetProperty("MenuItems").EnumerateArray())
+                {
+                    Console.WriteLine("| {0, -5} | {1, -20} | {2, -10} | {3, -15} | {4, -20} |",
+                        item.GetProperty("ItemId").GetInt32(),
+                        item.GetProperty("Name").GetString(),
+                        item.GetProperty("Price").GetInt32(),
+                        item.GetProperty("Category").GetString(),
+                        item.GetProperty("DateCreated").GetDateTime().ToString("yyyy-MM-dd HH:mm:ss"));
+                }
+                Console.WriteLine(new string('-', 100));
+            }
+            else
+            {
+                Console.WriteLine(response.GetProperty("Message").GetString());
+            }
+        }
+
         public static void DiscardMenuItems(StreamWriter writer, StreamReader reader, object request)
         {
             writer.WriteLine(JsonSerializer.Serialize(request));

@@ -110,6 +110,14 @@ namespace ServerApplication.Models
                         response.Success = response.DiscardMenu != null;
                         response.Message = response != null && response.Success ? "Discard Menu items retrieved successfully." : "Failed to retrieve Discard menu items.";
                         break;
+                    case "getDetailedFeedback":
+                        response.Success = SaveDiscardMenuNotification(dbHandler, request.Name);
+                        response.Message = response != null && response.Success ? "Asked for feedback to each employee" : "Failed to ask for feedback";
+                        break;
+                    case "removeDiscardItem":
+                        response.Success = RemoveDiscardFoodItem(dbHandler, request.Name);
+                        response.Message = response != null && response.Success ? "Successfully removed discard item" : "Failed to remove discard item";
+                        break;
                     case "update":
                         response.Success = adminService.UpdateMenuItem(request.ItemId, request.Name, request.Price, request.Category);
                         response.Message = response != null && response.Success ? "Menu item updated successfully." : "Failed to update menu item.";
@@ -164,6 +172,19 @@ namespace ServerApplication.Models
                         response.Success = response.DiscardMenu != null;
                         response.Message = response != null && response.Success ? "Discard Menu items retrieved successfully." : "Failed to retrieve Discard menu items.";
                         break;
+                    case "getDetailedFeedback":
+                        response.Success = SaveDiscardMenuNotification(dbHandler, request.Name);
+                        response.Message = response != null && response.Success ? "Asked for feedback to each employee" : "Failed to ask for feedback";
+                        break;
+                    case "readDiscardItemFeedback":
+                        response.DiscardMenuItemFeedback = chefService.GetDiscardItemFeedback();
+                        response.Success = response.DiscardMenuItemFeedback != null;
+                        response.Message = response != null && response.Success ? "Discard Item feedbacks retrieved successfully" : "Failed to retrieve feedbacks";
+                        break;
+                    case "removeDiscardItem":
+                        response.Success = RemoveDiscardFoodItem(dbHandler, request.Name);
+                        response.Message = response != null && response.Success ? "Successfully removed discard item" : "Failed to remove discard item";
+                        break;
                     case "logout":
                         authentication.Logout(user.Email);
                         writer.WriteLine("Logged out");
@@ -189,14 +210,25 @@ namespace ServerApplication.Models
                         response.Success = employeeService.AddItemFeedback(request.ItemId, request.FoodRating, request.Comment, user.Email);
                         response.Message = response != null && response.Success ? "Menu item feedback added successfully" : "Failed to add the feedback";
                         break;
+                    case "getFeedbackDiscardItem":
+                        response.Message = GetDiscardNotification(dbHandler);
+                        break;
+                    case "discardItemFeedback":
+                        response.Success = AddDiscardItemFeedback(dbHandler, request.DiscardItemFeedback);
+                        response.Message = response != null && response.Success ? "Discard item feedback added successfully" : "Failed to add the discard item feedback";
+                        break;
                     case "readNotification":
-                        response.MenuNotifications = employeeService.GetMenuNotifications(request.NotificationType);
+                        response.MenuNotifications = employeeService.GetMenuNotifications(request.NotificationType, user.Email);
                         response.Success = response.MenuNotifications != null;
                         response.Message = response != null && response.Success ? "Notification retrieved successfully." : "Failed to retrieve notification.";
                         break;
                     case "submitVote":
                         response.Success = employeeService.AddMenuVotes(request.HasLikedMenu);
                         response.Message = response != null && response.Success ? "Your vote has been recorded successfully." : "Failed to record your vote. Please try again.";
+                        break;
+                    case "updateProfile":
+                        response.Success = employeeService.UpdateEmployeeProfile(user.Email, request.UserProfile);
+                        response.Message = response != null && response.Success ? "Profile Updated Successfully" : "Failed to update your profile";
                         break;
                     case "logout":
                         authentication.Logout(user.Email);

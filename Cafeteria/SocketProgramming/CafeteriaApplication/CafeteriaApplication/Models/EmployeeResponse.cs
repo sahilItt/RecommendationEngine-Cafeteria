@@ -13,6 +13,7 @@
         public int VoteNo { get; set; }
         public string? Type { get; set; }
         public List<MenuNotificationItem>? Items { get; set; }
+        public string? RecommendationMessage { get; set; }
     }
 
     public class MenuNotificationItem

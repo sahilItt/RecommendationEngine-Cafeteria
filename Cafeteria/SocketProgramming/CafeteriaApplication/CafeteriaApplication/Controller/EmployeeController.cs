@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using CafeteriaApplication.Models;
+using static CafeteriaApplication.Utils.EmployeeHelper;
 
 namespace CafeteriaApplication.Controller
 {
@@ -23,7 +24,9 @@ namespace CafeteriaApplication.Controller
                 Console.WriteLine("1. View Notification");
                 Console.WriteLine("2. Vote Items");
                 Console.WriteLine("3. Give Feedback & Rating");
-                Console.WriteLine("4. Logout");
+                Console.WriteLine("4. Give Discard Item FeedBack");
+                Console.WriteLine("5. Update Your Profile");
+                Console.WriteLine("6. Logout");
 
                 string option = Console.ReadLine();
 
@@ -39,6 +42,12 @@ namespace CafeteriaApplication.Controller
                         GiveFeedback();
                         break;
                     case "4":
+                        GiveDiscardItemFeedback();
+                        break;
+                    case "5":
+                        UpdateProfile();
+                        break;
+                    case "6":
                         Logout();
                         return;
                     default:
@@ -63,7 +72,7 @@ namespace CafeteriaApplication.Controller
             {
                 foreach (var menuNotification in response.MenuNotifications)
                 {
-                    Console.WriteLine($"Notification Type: {menuNotification.Type}");
+                    Console.WriteLine($"All {menuNotification.Type} Notifications");
                     Console.WriteLine("{0, -10} | {1, -30} | {2, -10} | {3, -10}", "ItemId", "ItemName", "Price (INR)", "Category");
                     Console.WriteLine(new string('-', 90));
 
@@ -77,6 +86,11 @@ namespace CafeteriaApplication.Controller
                         item.Category);
                     }
 
+                    Console.WriteLine(new string('-', 90));
+                    if (menuNotification.Type == "chef")
+                    {
+                        Console.WriteLine($"Recommendation: {menuNotification.RecommendationMessage}");
+                    }
                     Console.WriteLine(new string('-', 90));
                     Console.WriteLine("Total Votes for menu: ");
                     Console.WriteLine("{0, -10} | {1, -10}", "VoteYes", "VoteNo");
@@ -148,6 +162,74 @@ namespace CafeteriaApplication.Controller
                 Comment = comment,
                 FoodRating = foodRating,
                 ItemId = itemId
+            };
+
+            writer.WriteLine(JsonSerializer.Serialize(request));
+
+            string responseJson = reader.ReadLine();
+            var response = JsonSerializer.Deserialize<EmployeeResponse>(responseJson);
+
+            Console.WriteLine(response.Message);
+        }
+
+        public void GiveDiscardItemFeedback()
+        {
+            EmployeeRequest request = new EmployeeRequest { Action = "getFeedbackDiscardItem" };
+            writer.WriteLine(JsonSerializer.Serialize(request));
+
+            string responseJson = reader.ReadLine();
+            var response = JsonSerializer.Deserialize<EmployeeResponse>(responseJson);
+            string feedbackFoodItem = response.Message;
+
+            Console.WriteLine($"We are trying to improve your experience with {feedbackFoodItem}. Please provide your feedback and help us.");
+
+            Console.WriteLine($"Q1. What didn’t you like about {feedbackFoodItem}?");
+            string feedbackQ1 = Console.ReadLine();
+
+            Console.WriteLine($"Q2. How would you like {feedbackFoodItem} to taste?");
+            string feedbackQ2 = Console.ReadLine();
+
+            Console.WriteLine($"Q3. Share your mom’s recipe for {feedbackFoodItem}:");
+            string feedbackQ3 = Console.ReadLine();
+
+            DiscardItemFeedback feedback = new DiscardItemFeedback
+            {
+                Question1 = $"Q1. What didn’t you like about {feedbackFoodItem}?",
+                Answer1 = feedbackQ1,
+                Question2 = $"Q2. How would you like {feedbackFoodItem} to taste?",
+                Answer2 = feedbackQ2,
+                Question3 = $"Q3. Share your mom’s recipe for {feedbackFoodItem}:",
+                Answer3 = feedbackQ3
+            };
+
+            string feedbackJson = JsonSerializer.Serialize(feedback);
+            request = new EmployeeRequest { Action = "discardItemFeedback", DiscardItemFeedback = feedbackJson };
+            writer.WriteLine(JsonSerializer.Serialize(request));
+
+            responseJson = reader.ReadLine();
+            response = JsonSerializer.Deserialize<EmployeeResponse>(responseJson);
+            Console.WriteLine(response.Message);
+        }
+
+        private void UpdateProfile()
+        {
+            Console.WriteLine("Please answer these questions to know your preferences:-");
+
+            string vegetarianPreference = GetVegetarianPreference();
+            string spiceLevel = GetSpiceLevel();
+            string foodPreference = GetFoodPreference();
+            string sweetTooth = GetSweetTooth();
+
+            EmployeeRequest request = new EmployeeRequest
+            {
+                Action = "updateProfile",
+                UserProfile = new Profile
+                {
+                    VegetarianPreference = vegetarianPreference,
+                    SpiceLevel = spiceLevel,
+                    FoodPreference = foodPreference,
+                    SweetTooth = sweetTooth
+                }
             };
 
             writer.WriteLine(JsonSerializer.Serialize(request));

@@ -8,5 +8,7 @@
         public int ItemId { get; set; }
         public bool HasLikedMenu { get; set; }
         public string? NotificationType { get; set; }
+        public Profile UserProfile { get; set; }
+        public string DiscardItemFeedback { get; set; }
     }
 }

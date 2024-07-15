@@ -5,5 +5,6 @@
         public string? Action {  get; set; }
         public List<int> ItemIds { get; set; } = new List<int>();
         public string? ChefMenuNotificationMessage { get; set; }
+        public string? Name { get; set; }
     }
 }

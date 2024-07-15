@@ -22,7 +22,7 @@ namespace ServerApplication.Services
             FROM 
                 feedback
             WHERE 
-                feedback_date = CURDATE() - INTERVAL 1 DAY
+                feedback_date BETWEEN CURDATE() - INTERVAL 1 MONTH AND CURDATE()
             GROUP BY 
                 feedback_item;";
 

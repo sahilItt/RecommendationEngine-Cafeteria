@@ -26,7 +26,8 @@ namespace CafeteriaApplication.Controller
                 Console.WriteLine("3. Send Menu for Next Day");
                 Console.WriteLine("4. View Menu Votes");
                 Console.WriteLine("5. View Discard Menu Item List");
-                Console.WriteLine("6. Logout");
+                Console.WriteLine("6. View Discard Item Feedback");
+                Console.WriteLine("7. Logout");
 
                 string option = Console.ReadLine();
 
@@ -49,6 +50,9 @@ namespace CafeteriaApplication.Controller
                         ViewDiscardMenuItems();
                         break;
                     case "6":
+                        ViewDiscardItemFeedback();
+                        break;
+                    case "7":
                         Logout();
                         return;
                     default:
@@ -71,11 +75,11 @@ namespace CafeteriaApplication.Controller
                     .OrderByDescending(item => item.SentimentScore)
                     .ToList();
 
-                Console.WriteLine("{0, -30} | {1, -10} | {2, -10}", "Name", "Sentiment Score", "Sentiments");
+                Console.WriteLine("{0, -30} | {1, -20} | {2, -20}", "Name", "Sentiment Score", "Sentiments");
                 Console.WriteLine(new string('-', 90));
                 foreach (var item in sortedItems)
                 {
-                    Console.WriteLine("{0, -30} | {1, -10} | {2, -10}", item.MenuItem, item.SentimentScore, item.Sentiments);
+                    Console.WriteLine("{0, -30} | {1, -20} | {2, -20}", item.MenuItem, item.SentimentScore, item.Sentiments);
                 }
             }
             else
@@ -125,6 +129,43 @@ namespace CafeteriaApplication.Controller
             ChefRequest request = new ChefRequest { Action = "readDiscardMenu" };
             DiscardMenuItems(writer, reader, request);
         }
+
+        private void ViewDiscardItemFeedback()
+        {
+            ChefRequest request = new ChefRequest { Action = "readDiscardItemFeedback" };
+            writer.WriteLine(JsonSerializer.Serialize(request));
+
+            string responseJson = reader.ReadLine();
+            ChefResponse response = JsonSerializer.Deserialize<ChefResponse>(responseJson);
+
+            if (response.Success)
+            {
+                List<string> feedbackList = response.DiscardMenuItemFeedback;
+
+                if (feedbackList != null && feedbackList.Count > 0)
+                {
+                    foreach (string feedbackJson in feedbackList)
+                    {
+                        DiscardItemFeedback feedback = JsonSerializer.Deserialize<DiscardItemFeedback>(feedbackJson);
+
+                        Console.WriteLine("Feedback:");
+                        Console.WriteLine($"{feedback.Question1}\n{feedback.Answer1}");
+                        Console.WriteLine($"{feedback.Question2}\n{feedback.Answer2}");
+                        Console.WriteLine($"{feedback.Question3}\n{feedback.Answer3}");
+                        Console.WriteLine(new string('-', 100));
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No feedback data available.");
+                }
+            }
+            else
+            {
+                Console.WriteLine(response.Message);
+            }
+        }
+
 
         private void SendNextDayMenu()
         {

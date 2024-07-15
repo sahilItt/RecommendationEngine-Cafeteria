@@ -8,4 +8,11 @@
         public string? Role { get; set; }
     }
 
+    public class Profile
+    {
+        public string? VegetarianPreference { get; set; }
+        public string? SpiceLevel { get; set; }
+        public string? FoodPreference { get; set; }
+        public string? SweetTooth { get; set; }
+    }
 }

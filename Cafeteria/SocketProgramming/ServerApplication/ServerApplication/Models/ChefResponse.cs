@@ -8,6 +8,8 @@
         public string? DiscardMenu { get; set; }
         public List<RecommendedItem>? RecommendedMenuItems { get; set; }
         public List<dynamic>? MenuItems { get; set; }
+        public List<string> DiscardMenuItemFeedback { get; set; }
+
     }
 
     public class FullMenuItem

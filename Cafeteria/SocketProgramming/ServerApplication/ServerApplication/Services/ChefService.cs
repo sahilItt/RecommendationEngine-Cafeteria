@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Generic;
+using System.Text.Json;
 using MySql.Data.MySqlClient;
 using ServerApplication.Models;
 
@@ -87,6 +88,24 @@ namespace ServerApplication.Services
             }
 
             return JsonSerializer.Serialize(menuVotes);
+        }
+
+        public List<string> GetDiscardItemFeedback()
+        {
+            string query = "select feedback from discard_item_feedback order by date_added desc";
+
+            List<string> itemFeedbacks = new List<string>(); 
+
+            using (MySqlDataReader reader = dbHandler.ExecuteReader(query))
+            {
+                while (reader.Read())
+                {
+                    string discardItemFeedback = reader.GetString("feedback");
+                    itemFeedbacks.Add(discardItemFeedback);
+                }
+            }
+
+            return itemFeedbacks;
         }
 
         public bool SaveChefMenuNotification(string notificationMessage)

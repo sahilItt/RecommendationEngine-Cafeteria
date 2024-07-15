@@ -130,5 +130,54 @@ namespace ServerApplication.Services
 
             return false;
         }
+
+        public static bool RemoveDiscardFoodItem(DbHandler dbHandler, string removableFoodItemName)
+        {
+            string query = "delete from discard_menu where food_item = @FoodItem";
+
+            MySqlParameter[] parameters = {
+                new MySqlParameter("@FoodItem", removableFoodItemName)
+            };
+
+            return dbHandler.ExecuteNonQuery(query, parameters) > 0;
+        }
+
+        public static string GetDiscardNotification(DbHandler dbHandler)
+        {
+            string query = "select message from notification where type = 'discard' order by notification_date desc limit 1";
+            string message = "";
+            using (MySqlDataReader reader = dbHandler.ExecuteReader(query))
+            {
+                while (reader.Read())
+                {
+                    message += reader.GetString("message");
+                }
+            }
+            return message;
+        }
+
+        public static bool AddDiscardItemFeedback(DbHandler dbHandler, string discardItemFeedback)
+        {
+            string feedbackFoodItem = GetDiscardNotification(dbHandler);
+
+            string query = @"INSERT INTO discard_item_feedback (food_item, feedback, date_added) 
+                             VALUES (@FoodItem, @Feedback, NOW())";
+            MySqlParameter[] parameters = {
+                new MySqlParameter("@FoodItem", feedbackFoodItem),
+                new MySqlParameter("@Feedback", discardItemFeedback)
+            };
+
+            return dbHandler.ExecuteNonQuery (query, parameters) > 0;
+        }
+
+        public static bool SaveDiscardMenuNotification(DbHandler dbHandler, string notificationMessage)
+        {
+            string query = "INSERT INTO notification (message, type, notification_date, vote_yes, vote_no) VALUES (@NotificationMessage, 'discard', NOW(), 0, 0)";
+            MySqlParameter[] parameters = {
+                new MySqlParameter("@NotificationMessage", notificationMessage)
+            };
+
+            return dbHandler.ExecuteNonQuery(query, parameters) > 0;
+        }
     }
 }

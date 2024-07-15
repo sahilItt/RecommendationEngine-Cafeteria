@@ -76,12 +76,12 @@ namespace ServerApplication.Services
                 totalScore += (presetScore + item.FoodRating) / 2.0;
             }
 
-            return totalScore/commentsWithRatings.Count;
+            return Math.Round(totalScore/commentsWithRatings.Count, 2);
         }
 
         private string GetSentimentTexts(List<FeedbackDetail> commentsWithRatings)
         {
-            List<string> sentimentTexts = new List<string>();
+            HashSet<string> sentimentTexts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var item in commentsWithRatings)
             {

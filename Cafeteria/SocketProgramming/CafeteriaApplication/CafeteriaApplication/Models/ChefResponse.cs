@@ -7,5 +7,6 @@
         public string? MenuVotes { get; set; }
         public List<RecommendedItem>? RecommendedMenuItems { get; set; }
         public List<dynamic>? FullMenuItems { get; set; }
+        public List<string> DiscardMenuItemFeedback { get; set; }
     }
 }

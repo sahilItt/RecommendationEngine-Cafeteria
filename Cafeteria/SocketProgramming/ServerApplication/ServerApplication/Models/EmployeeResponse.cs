@@ -13,6 +13,7 @@
         public int VoteNo { get; set; }
         public string? Type { get; set; }
         public List<MenuNotificationItem>? Items { get; set; }
+        public string? RecommendationMessage { get; set; }
     }
 
     public class MenuNotificationItem
@@ -21,5 +22,9 @@
         public string? ItemName { get; set; }
         public float Price { get; set; }
         public string? Category { get; set; }
+        public string? SweetTooth { get; set; }
+        public string? DietaryType { get; set; }
+        public string? SpiceLevel { get; set; }
+        public string? FoodType { get; set; }
     }
 }
